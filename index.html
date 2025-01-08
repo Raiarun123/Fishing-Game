@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="xh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Umdlalo Wokuloba</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #87CEEB;
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: none;
+        }
+        #gameInfo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        #startButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
+            font-size: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #startButton:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<button id="startButton">Qalisa Umdlalo</button>
+<div id="gameInfo" class="text-center">
+    <h3>Umdlalo Wokuloba</h3>
+    <p>Imali efumanekileyo: <span id="score">0</span></p>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startButton = document.getElementById('startButton');
+    const gameInfo = document.getElementById('gameInfo');
+    
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fish = new Image();
+    fish.src = 'https://example.com/fish.png'; // Faka i-URL efanelekileyo yemifanekiso
+
+    let score = 0;
+    const fishData = [];
+
+    function createFish() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        const speed = Math.random() * 2 + 1;
+        fishData.push({ x, y, speed });
+    }
+
+    function drawFish() {
+        for (let i = 0; i < fishData.length; i++) {
+            const fishItem = fishData[i];
+            ctx.drawImage(fish, fishItem.x, fishItem.y, 50, 30);
+            fishItem.y += fishItem.speed;
+            if (fishItem.y > canvas.height) {
+                fishData.splice(i, 1);
+                createFish();
+            }
+        }
+    }
+
+    function handleMouseClick(event) {
+        const x = event.clientX;
+        const y = event.clientY;
+
+        for (let i = 0; i < fishData.length; i++) {
+            const fishItem = fishData[i];
+            if (
+                x > fishItem.x && x < fishItem.x + 50 &&
+                y > fishItem.y && y < fishItem.y + 30
+            ) {
+                fishData.splice(i, 1);
+                score += 10;
+                document.getElementById('score').innerText = score;
+                createFish();
+                break;
+            }
+        }
+    }
+
+    canvas.addEventListener('click', handleMouseClick);
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawFish();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function startGame() {
+        startButton.style.display = 'none';
+        canvas.style.display = 'block';
+        gameInfo.style.display = 'block';
+        for (let i = 0; i < 5; i++) {
+            createFish();
+        }
+        gameLoop();
+    }
+
+    startButton.addEventListener('click', startGame);
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
